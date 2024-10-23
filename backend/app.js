@@ -1,6 +1,6 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-const claimRoute = require("./routes/claimRoute.js");
+const bookmarkletRoute = require("./routes/bookmarkletRoute.js");
 const path = require("path");
 
 const app = express();
@@ -12,7 +12,7 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(bodyParser.json());
 
 // Routes
-app.post("/claimRoute", claimRoute);
+app.post("/bookmarklet", bookmarkletRoute);
 
 app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "public", "index.html"));
