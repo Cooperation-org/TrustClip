@@ -2,15 +2,15 @@ const express = require("express");
 const router = express.Router();
 
 router.post("/", (req, res) => {
-    const { text } = req.body;
+    const { text, currentPageUrl } = req.body;
+    console.log("Page URL", currentPageUrl);
     if (!text) {
         return res.status(400).json({ error: "No text provided" });
     }
 
-    // process the claim, save to a database for further processing
     console.log(`Received claim: ${text}`);
 
-    res.json({ message: "Claim received successfully" });
+    res.status(200).send({ message: "Claim received successfully" });
 });
 
 module.exports = router;

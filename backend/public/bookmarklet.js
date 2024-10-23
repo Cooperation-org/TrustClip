@@ -1,6 +1,7 @@
 javascript: (function () {
     // Listen for the 'mouseup' event to detect when the user finishes selecting text
     document.addEventListener("mouseup", function () {
+        var currentPageUrl = window.location.href;
         var selectedText = window.getSelection().toString().trim();
 
         // Check if any text was selected
@@ -11,9 +12,10 @@ javascript: (function () {
             );
 
             if (confirmSend) {
-                var backendUrl = "http://localhost:3000/claimRoute"; // Your API endpoint
+                var backendUrl = "http://localhost:3000/bookmarklet"; // API endpoint
                 var data = {
                     text: selectedText,
+                    currentPageUrl,
                 };
 
                 // Send the selected text to the backend using fetch
@@ -29,7 +31,7 @@ javascript: (function () {
                         alert("Text sent successfully!");
                     })
                     .catch((error) => {
-                        console.error("Error:", error);
+                        console.log("Error:", error);
                         alert("Failed to send text.");
                     });
             }
