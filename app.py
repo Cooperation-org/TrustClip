@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
@@ -61,7 +61,10 @@ async def process_text():
 
 @app.route('/bookmarklet.js')
 def serve_bookmarklet():
-    return app.send_static_file('bookmarklet.js')
+    try:
+        return send_from_directory('bookmarklet', 'bookmarklet.js', mimetype='application/javascript')
+    except FileNotFoundError:
+        return "Bookmarklet file not found", 404
 
 if __name__ == '__main__':
     app.run(debug=True)
