@@ -2,8 +2,12 @@ from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 import requests
 import os
+from dotenv import load_dotenv
+from pprint import pprint
 from functools import wraps
 from claim_extractor import ClaimExtractor
+
+load_dotenv()
 
 app = Flask(__name__)
 CORS(app)
@@ -25,6 +29,7 @@ def require_api_key(f):
 
 @app.route('/process', methods=['POST'])
 async def process_text():
+    import pdb; pdb.set_trace()
     try:
         data = request.json
         text = data.get('text')
@@ -34,7 +39,8 @@ async def process_text():
             return jsonify({"error": "No text provided"}), 400
 
         # Process with LangChain
-        result = await extractor.extract_claims(text})
+        result = extractor.extract_claims(text)
+        pprint(result)
         
         # Forward to claims API
         claims_response = requests.post(
