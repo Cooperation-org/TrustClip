@@ -29,7 +29,6 @@ def require_api_key(f):
 
 @app.route('/process', methods=['POST'])
 async def process_text():
-    import pdb; pdb.set_trace()
     try:
         data = request.json
         text = data.get('text')
