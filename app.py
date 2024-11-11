@@ -1,10 +1,9 @@
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
-from langchain_openai import ChatOpenAI
-from langchain_core.prompts import ChatPromptTemplate
 import requests
 import os
 from functools import wraps
+from claim_extractor import ClaimExtractor
 
 app = Flask(__name__)
 CORS(app)
@@ -13,13 +12,7 @@ CORS(app)
 CLAIMS_API_ENDPOINT = os.getenv('CLAIMS_API_ENDPOINT')
 API_KEY = os.getenv('API_KEY')
 
-# Initialize LangChain
-llm = ChatOpenAI()
-prompt = ChatPromptTemplate.from_messages([
-    ("system", "Extract claims and attestations from the text."),
-    ("user", "{text}")
-])
-chain = prompt | llm
+extractor = ClaimExtractor()
 
 def require_api_key(f):
     @wraps(f)
@@ -31,7 +24,6 @@ def require_api_key(f):
     return decorated
 
 @app.route('/process', methods=['POST'])
-@require_api_key
 async def process_text():
     try:
         data = request.json
@@ -42,7 +34,7 @@ async def process_text():
             return jsonify({"error": "No text provided"}), 400
 
         # Process with LangChain
-        result = await chain.ainvoke({"text": text})
+        result = await extractor.extract_claims(text})
         
         # Forward to claims API
         claims_response = requests.post(
