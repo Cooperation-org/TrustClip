@@ -1,6 +1,6 @@
 {
   "name": "@linked-claims/trustclip",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Bookmarklet tools for extracting claims from web pages and linking them into a web of trust",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
