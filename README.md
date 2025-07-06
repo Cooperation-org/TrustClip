@@ -1,45 +1,178 @@
-# Bookmarklet
+# @linked-claims/trustclip
 
-## Overview
+Bookmarklet tools for extracting claims from any web page and linking them into a decentralized web of trust. Extract attestations, claims, and trust signals from articles, social profiles, forums, or any web content.
 
-**TrustClip Bookmarklet** allows users to quickly highlight and send selected text directly from a webpage. This tool is designed to enhance user interaction with trust management tools by making it simple to copy, verify, and interact with content in real-time.
+## Core Purpose
 
-The **Bookmarklet** project is a lightweight JavaScript utility designed to extract selected text from any webpage and send it to a backend API for processing.
-
-It is particularly useful for applications that require quick data collection from online articles, such as claim processing or content analysis.
-
-## Features
-
--   **Text Selection**: Allows users to select text directly from web pages.
--   **API Integration**: Sends the selected text to a backend API endpoint for further processing.
--   **User-Friendly Interface**: Simple installation and usage as a bookmarklet in browser.
--   **Text Selection**: Users can highlight any text on a webpage.
--   **Prompt for Confirmation**: A dialog box appears, asking the user if they want to send the selected text.
--   **Trust Management**: Easily send selected text for verification within the TrustClip ecosystem.
-
-## How It Works
-
--   **Click the Bookmarklet**: After clicking the bookmarklet, highlighted text in that window will be sent for claims.
--   **Highlight Text**: On any webpage, simply highlight the text you want to interact with.  A confirmation dialog will pop up.
--   **Send the Text**: Upon confirmation, the selected text will be sent to the backend for further processing or trust verification.
+TrustClip enables users to:
+- **Extract claims** from any web content (articles, posts, profiles, documents)
+- **Link claims** into a decentralized trust graph
+- **Preserve context** by maintaining source URLs and metadata
+- **Build trust networks** from existing web content
 
 ## Installation
 
-To install and use the TrustClip Bookmarklet, follow these steps:
+```bash
+npm install @linked-claims/trustclip
+```
 
-1. **Install TrustClip**:
+## Usage
 
-    - Open the [index.html](./index.html) page in this repo directly in a browser (not from github).
-    - Drag the button to your bookmarks bar.
+### LinkedIn Age Verification
 
-2. **Alternate manual installation**:
+Specialized bookmarklet for verifying LinkedIn account age:
 
-    - create a bookmark with this code, where the src link is where the bookmarklet is installed 
+```typescript
+import { LinkedInBookmarklet } from '@linked-claims/trustclip';
 
-    ```
-    javascript: (function () {
-        var script = document.createElement("script");
-        script.src = "http://localhost:3000/bookmarklet.js";
-        document.body.appendChild(script);
-    })();
-    ```
+const linkedInBookmarklet = new LinkedInBookmarklet({
+  apiEndpoint: 'https://your-api.com/linkedin/verify-age',
+  tokenKey: 'linkedin_verification_token' // optional, defaults to this
+});
+
+// Get bookmarklet code
+const code = linkedInBookmarklet.getBookmarkletCode();
+
+// Get as data URI for links
+const uri = linkedInBookmarklet.getBookmarkletURI();
+```
+
+### General Claim Extraction
+
+The primary use case - extract claims from any web content:
+
+```typescript
+import { ClaimExtractionBookmarklet } from '@linked-claims/trustclip';
+
+// Extract claims from news articles, blog posts, forum discussions, etc.
+const claimBookmarklet = new ClaimExtractionBookmarklet({
+  apiEndpoint: 'https://your-api.com/process',
+  enableOnSelect: false // click to activate
+});
+
+// Auto-extract when text is selected (for power users)
+const autoClaimBookmarklet = new ClaimExtractionBookmarklet({
+  apiEndpoint: 'https://your-api.com/process',
+  enableOnSelect: true
+});
+```
+
+**Use cases:**
+- Extract claims from news articles
+- Capture attestations from blog posts
+- Save endorsements from recommendation letters
+- Collect statements from research papers
+- Archive promises from company announcements
+
+### Dynamic Script Loader
+
+Load a more complex script from your server (useful for development):
+
+```typescript
+import { DynamicLoaderBookmarklet } from '@linked-claims/trustclip';
+
+const loaderBookmarklet = new DynamicLoaderBookmarklet(
+  'https://your-server.com' // will load from /bookmarklet.js
+);
+```
+
+## Example: Creating Bookmarklet Links
+
+```html
+<!-- LinkedIn Age Verification -->
+<a href="javascript:(function(){...})" 
+   class="bookmarklet">
+  🔍 Verify LinkedIn Age
+</a>
+
+<!-- Claim Extraction -->
+<a href="javascript:(function(){...})" 
+   class="bookmarklet">
+  📋 Extract Claims
+</a>
+```
+
+Or in React:
+
+```tsx
+function BookmarkletButtons() {
+  const linkedIn = new LinkedInBookmarklet({ 
+    apiEndpoint: '/api/linkedin/verify' 
+  });
+  
+  const claims = new ClaimExtractionBookmarklet({ 
+    apiEndpoint: '/api/claims/extract' 
+  });
+  
+  return (
+    <div>
+      <a href={linkedIn.getBookmarkletURI()}>
+        Verify LinkedIn
+      </a>
+      <a href={claims.getBookmarkletURI()}>
+        Extract Claims
+      </a>
+    </div>
+  );
+}
+```
+
+## API Endpoints
+
+Your API endpoints should accept:
+
+### LinkedIn Verification
+```typescript
+POST /api/linkedin/verify-age
+Headers: {
+  'X-Verification-Token': 'token-from-session'
+}
+Body: {
+  memberSince: string,    // "Member since March 2018"
+  year: number,          // 2018
+  month: string,         // "March"
+  profileUrl: string,    // Full LinkedIn URL
+  profileId: string,     // LinkedIn ID
+  timestamp: string      // ISO timestamp
+}
+```
+
+### Claim Extraction
+```typescript
+POST /api/claims/extract
+Body: {
+  text: string,          // Selected text
+  source_url: string     // Current page URL
+}
+```
+
+## Development
+
+```bash
+npm install
+npm run build
+```
+
+## Local Testing with Talent App
+
+1. **Build and link this package**:
+   ```bash
+   cd /Users/gv/parent/linked-trust/trustClip
+   npm install
+   npm run build
+   npm link
+   ```
+
+2. **Link in the talent app** (when ready to test):
+   ```bash
+   cd /Users/gv/parent/linked-trust/talent
+   npm link @linked-claims/trustclip
+   ```
+
+3. **To unlink later**:
+   ```bash
+   cd /Users/gv/parent/linked-trust/talent
+   npm unlink @linked-claims/trustclip
+   ```
+
+Note: The talent app currently has its own embedded version of the bookmarklet code. This package structure is for future migration.
